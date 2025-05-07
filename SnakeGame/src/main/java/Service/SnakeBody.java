@@ -2,9 +2,10 @@ package Service;
 
 import Models.Body;
 import Models.Direction;
+import Models.Food;
 import Models.Snake;
 
-public class SnakeBody implements SnakeBodyService
+public class SnakeBody implements ISnakeBodyService
 {
     @Override
     public Snake createSnake(int x, int y, int speed)
@@ -16,5 +17,11 @@ public class SnakeBody implements SnakeBodyService
     public void addBody(Snake snake, int x, int y)
     {
         snake.addBody(new Body(snake.getBody().size(), x, y));
+    }
+
+    @Override
+    public void eatFood(Snake snake, Food food)
+    {
+        snake.eatFood(food);
     }
 }
