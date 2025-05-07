@@ -54,8 +54,8 @@ public class Snake
         return foodEaten;
     }
 
-    public void setFoodEaten(List<Food> foodEaten)
+    public void eatFood(Food foodEaten)
     {
-        this.foodEaten = foodEaten;
+        this.foodEaten.add(foodEaten);
     }
 }
