@@ -2,57 +2,110 @@ package org.example.snakegame;
 
 import Models.Food;
 import Models.Snake;
+import Service.FoodService;
+import Service.IFoodService;
 import Service.ISnakeBodyService;
 import Service.SnakeBody;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
+import javafx.util.Duration;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
-public class Controller {
+public class Controller
+{
+    private final int BOARD_WIDTH = 720, BOARD_HEIGHT = 520, UNIT_SIZE = 20, ROWS = 24, COLS = 36;
     private Snake snake;
+    private List<Food> spawnedFood;
     private ISnakeBodyService snakeBodyService;
+    private IFoodService foodService;
+    private Timeline tl;
     @FXML private Label title, score, foodL;
     @FXML private Button insaneMod, normaleMod;
     @FXML private AnchorPane board;
 
-    public void initialize() {
-        this.snakeBodyService = new SnakeBody();
-        this.snake = snakeBodyService.createSnake(250, 350, 20);
+    public void initialize()
+    {
 
     }
 
-    public void removeStartObj(){
+    public void removeMenuChoices()
+    {
         board.getChildren().removeAll(insaneMod,normaleMod,title);
         score.setVisible(true);
         foodL.setVisible(true);
 
     }
-    public void setBoardReady(){
+
+    public void setBoardReady()
+    {
         board.setStyle("-fx-background-color: #1e1e1e;");
-        drawCheckeredBoard(24, 35,20);
+        drawCheckeredBoard(ROWS, COLS, UNIT_SIZE);
+        createFood();
     }
 
-
-    public void onActionNormaleMode(javafx.event.ActionEvent actionEvent) {
-        removeStartObj();
+    public void onActionNormaleMode(javafx.event.ActionEvent actionEvent)
+    {
+        removeMenuChoices();
+        startGame(20);
         setBoardReady();
         makeHead();
     }
 
-    public void onActionInsaneMode(javafx.event.ActionEvent actionEvent) {
-        removeStartObj();
-        setBoardReady();
-        makeHead();
+    private void startGame(int speed)
+    {
+        tl = new Timeline();
+        tl.setCycleCount(Timeline.INDEFINITE);
+        tl.setAutoReverse(false);
+
+        this.snakeBodyService = new SnakeBody();
+        this.snake = snakeBodyService.createSnake(BOARD_WIDTH/2, BOARD_HEIGHT/2, speed);
+        this.foodService = new FoodService(BOARD_WIDTH, BOARD_HEIGHT, UNIT_SIZE);
+        this.spawnedFood = new ArrayList<>();
+        tl.getKeyFrames().add(new KeyFrame(Duration.seconds(1), new EventHandler<ActionEvent>()
+        {
+
+            @Override
+            public void handle(ActionEvent actionEvent)
+            {
+                snakeBodyService.moveSnake(snake, snake.getDirection());
+                makeHead();
+                for (Food food : spawnedFood)
+                {
+                    if (food.getExperationTimer() <= 0)
+                    {
+
+                    }
+                }
+            }
+        }));
+
+        tl.play();
     }
-    public void drawCheckeredBoard( int rows, int cols, int tileSize) {
 
+    public void onActionInsaneMode(javafx.event.ActionEvent actionEvent)
+    {
+        removeMenuChoices();
+        setBoardReady();
+    }
 
-        for (int row = 0; row < rows; row++) {
-            for (int col = 0; col < cols; col++) {
+    public void drawCheckeredBoard( int rows, int cols, int tileSize)
+    {
+        for (int row = 0; row < rows; row++)
+        {
+            for (int col = 0; col < cols; col++)
+            {
                 Pane tile = new Pane();
                 tile.setPrefSize(tileSize, tileSize);
                 tile.setLayoutX(col * tileSize);
@@ -66,7 +119,9 @@ public class Controller {
             }
         }
     }
-    public void setScore() {
+
+    public void setScore()
+    {
         int totalScore = 0;
         for (Food f : snake.getFoodEaten())
         {
@@ -75,32 +130,57 @@ public class Controller {
 
         this.score.setText("Score: " + totalScore);
     }
-    public Label getScore() {
+
+    public Label getScore()
+    {
         return score;
     }
-    public void setFoodL() {
+
+    public void setFoodL()
+    {
         int totalFoodEaten = 0;
-        for (Food f : snake.getFoodEaten()){
+        for (Food f : snake.getFoodEaten())
+        {
             totalFoodEaten += f.getPoints();
         }
         this.foodL.setText("Food Eaten: " + totalFoodEaten);
     }
-    public Label getFoodL() {
+
+    public Label getFoodL()
+    {
         return foodL;
     }
-    public void makeHead() {
+
+    public void makeHead()
+    {
         int x = snake.getBody().getFirst().getX();
         int y = snake.getBody().getFirst().getY();
 
-        Rectangle rect = new Rectangle(20, 20); // size of one tile
+        Rectangle rect = new Rectangle(UNIT_SIZE, UNIT_SIZE); // size of one tile
         rect.setLayoutX(x);
         rect.setLayoutY(y);
         rect.setArcWidth(4);
         rect.setArcHeight(4);
         rect.setStyle("-fx-fill: #FFFFFF;"); // green head
 
+        for (int i = 0; i < board.getChildren().size(); i++)
+        {
+            if (board.getChildren().get(i) instanceof Rectangle)
+            {
+                board.getChildren().remove(i);
+            }
+        }
         board.getChildren().add(rect);
     }
 
-
+    private void createFood()
+    {
+        Food food = foodService.createApple(snake);
+        Circle circle = new Circle(UNIT_SIZE/2); // size of one tile
+        circle.setLayoutX(food.getX());
+        circle.setLayoutY(food.getY());
+        circle.setStyle("-fx-fill: #FF0000;"); // green head
+        spawnedFood.add(food);
+        board.getChildren().add(circle);
+    }
 }

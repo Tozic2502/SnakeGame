@@ -54,8 +54,8 @@ public class FoodService implements IFoodService
         while (!isValid)
         {
             isValid = true;
-            x = random.nextInt(width/unitSize) * unitSize;
-            y = random.nextInt(height/unitSize) * unitSize;
+            x = random.nextInt(1, 36) * unitSize -10;
+            y = random.nextInt(1, 24) * unitSize -10;
             for (Placement p : body)
             {
                 if (x == p.getX() && y == p.getY())
