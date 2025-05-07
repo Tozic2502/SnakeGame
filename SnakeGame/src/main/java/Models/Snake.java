@@ -1,5 +1,8 @@
 package Models;
 
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,6 +14,14 @@ public class Snake
     private int speed;
 
 
+
+        public void draw(GraphicsContext gc, int tileSize) {
+            for (Body part : body) {
+                gc.setFill(Color.LIGHTGREEN);
+                gc.fillOval(part.getX(), part.getY(), tileSize, tileSize);
+            }
+
+        }
 
     public List<Body> getBody() {
         return body;

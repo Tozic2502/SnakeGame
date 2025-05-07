@@ -21,7 +21,7 @@ public class Controller {
 
     public void initialize() {
         this.snakeBodyService = new SnakeBody();
-        this.snake = snakeBodyService.createSnake(250, 350, 20);
+        this.snake = snakeBodyService.createSnake(320, 260, 20);
 
     }
 
