@@ -1,5 +1,7 @@
 package org.example.snakegame;
 
+import Models.Food;
+import Models.Snake;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -7,12 +9,11 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 
 public class Controller {
-
+    private Snake snake;
     @FXML private Label title, score, foodL;
     @FXML private Button insaneMod, normaleMod;
     @FXML private AnchorPane board;
 
-    private int totalScore, totalFoodEaten;
 
     public void removeStartObj(){
         board.getChildren().removeAll(insaneMod,normaleMod,title);
@@ -54,14 +55,22 @@ public class Controller {
         }
     }
     public void setScore(int score) {
-        score += totalScore;
+        int totalScore = 0;
+        for (Food f : snake.getFoodEaten())
+        {
+            totalScore += f.getPoints();
+        }
+
         this.score.setText("Score: " + totalScore);
     }
     public Label getScore() {
         return score;
     }
     public void setFoodL(int food) {
-        food += totalFoodEaten;
+        int totalFoodEaten = 0;
+        for (Food f : snake.getFoodEaten()){
+            totalFoodEaten += f.getPoints();
+        }
         this.foodL.setText("Food Eaten: " + totalFoodEaten);
     }
     public Label getFoodL() {
