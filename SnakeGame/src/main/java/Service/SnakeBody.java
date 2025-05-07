@@ -1,9 +1,6 @@
 package Service;
 
-import Models.Body;
-import Models.Direction;
-import Models.Food;
-import Models.Snake;
+import Models.*;
 
 public class SnakeBody implements ISnakeBodyService
 {
@@ -23,5 +20,25 @@ public class SnakeBody implements ISnakeBodyService
     public void eatFood(Snake snake, Food food)
     {
         snake.eatFood(food);
+    }
+
+    @Override
+    public void moveSnake(Snake snake, Direction direction)
+    {
+        Body head = snake.getBody().getFirst();
+
+        switch (direction)
+        {
+            case Up -> head.setY(head.getY() - 20);
+            case Down -> head.setY(head.getY() + 20);
+            case Left -> head.setX(head.getX() - 20);
+            case Right -> head.setX(head.getX() + 20);
+        }
+
+        for (int i = snake.getBody().size() -1; i >= 1; i--)
+        {
+            snake.getBody().get(i).setX(snake.getBody().get(i-1).getX());
+            snake.getBody().get(i).setY(snake.getBody().get(i-1).getY());
+        }
     }
 }

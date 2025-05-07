@@ -10,30 +10,7 @@ public class Snake
     private List<Body> body;
     private int speed;
 
-    public Snake() {
-        body = new ArrayList<>();
-        speed = 5;
-    }
 
-    public void initializeSnake(int startX, int startY) {
-        body.add(new Body(0, startX, startY));
-    }
-
-    public void moveSnake(Direction direction) {
-        Body head = body.get(0);
-        int newX = head.getX();
-        int newY = head.getY();
-
-        switch (direction) {
-            case Up -> newY -= 20;
-            case Down -> newY += 20;
-            case Left -> newX -= 20;
-            case Right -> newX += 20;
-        }
-
-        body.add(0, new Body(0, newX, newY));
-
-        }
 
     public List<Body> getBody() {
         return body;
