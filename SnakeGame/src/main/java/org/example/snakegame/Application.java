@@ -17,6 +17,7 @@ public class Application extends javafx.application.Application {
                 getClass().getResource("/Styles.css").toExternalForm());
 
         stage.setTitle("Hello!");
+        stage.setResizable(false);
         stage.setScene(scene);
         stage.show();
 

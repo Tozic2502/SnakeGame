@@ -13,5 +13,14 @@
             <Font name="System Bold Italic" size="25.0" />
          </font>
       </Label>
+      <Label fx:id="score" layoutX="14.0" layoutY="478.0" prefHeight="18.0" prefWidth="85.0" text="Score:" textFill="WHITE" visible="false">
+         <font>
+            <Font name="Arial Bold Italic" size="12.0" />
+         </font>
+      </Label>
+      <Label fx:id="foodL" layoutX="100.0" layoutY="479.0" prefHeight="18.0" prefWidth="111.0" text="Food Eaten:" textFill="WHITE" visible="false">
+         <font>
+            <Font name="Arial Bold Italic" size="12.0" />
+         </font></Label>
    </children>
 </AnchorPane>
