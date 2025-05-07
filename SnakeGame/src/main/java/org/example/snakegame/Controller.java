@@ -22,7 +22,7 @@ public class Controller {
     }
     public void setBoardReady(){
         board.setStyle("-fx-background-color: #1e1e1e;");
-        drawCheckerBoard(20, 28,25);
+        drawCheckerBoard(25, 35,20);
     }
 
 
