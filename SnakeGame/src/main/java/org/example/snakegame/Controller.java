@@ -57,6 +57,7 @@ public class Controller
         drawCheckeredBoard(ROWS, COLS, UNIT_SIZE);
         makeBody(snake.getBody().getFirst());
 
+        board.requestFocus();
         board.setOnKeyPressed(new EventHandler<KeyEvent>()
         {
             @Override
