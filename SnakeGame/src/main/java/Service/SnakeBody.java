@@ -24,7 +24,7 @@ public class SnakeBody implements ISnakeBodyService
     }
 
     @Override
-    public void moveSnake(Snake snake, Direction direction)
+    public boolean moveSnake(Snake snake, Direction direction)
     {
         Body head = snake.getBody().getFirst();
 
@@ -38,8 +38,15 @@ public class SnakeBody implements ISnakeBodyService
 
         for (int i = snake.getBody().size() -1; i >= 1; i--)
         {
+            if (snake.getBody().get(i).getX() == head.getX() && snake.getBody().get(i).getY() == head.getY())
+            {
+                return false;
+            }
             snake.getBody().get(i).setX(snake.getBody().get(i-1).getX());
             snake.getBody().get(i).setY(snake.getBody().get(i-1).getY());
+
+
         }
+        return true;
     }
 }

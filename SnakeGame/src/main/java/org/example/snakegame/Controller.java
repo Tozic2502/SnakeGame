@@ -121,7 +121,12 @@ public class Controller
             @Override
             public void handle(ActionEvent actionEvent)
             {
-                snakeBodyService.moveSnake(snake, snake.getDirection());
+                if (!snakeBodyService.moveSnake(snake, snake.getDirection()))
+                {
+                    tl.stop();
+                    return;
+                }
+
                 System.out.println("X " + snake.getBody().getFirst().getX() + " Y " + snake.getBody().getFirst().getY());
                 if (snake.getBody().getFirst().getX() >= BOARD_WIDTH || snake.getBody().getFirst().getX() < 0 || snake.getBody().getFirst().getY() > 460 || snake.getBody().getFirst().getY() < 0)
                 {
