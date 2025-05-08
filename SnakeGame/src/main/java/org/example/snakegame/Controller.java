@@ -50,7 +50,6 @@ public class Controller
         board.getChildren().removeAll(insaneMod,normaleMod,title);
         score.setVisible(true);
         foodL.setVisible(true);
-
     }
 
     public void setBoardReady()
@@ -135,18 +134,25 @@ public class Controller
                     return;
                 }
 
+                List<Food> removedFood = new ArrayList<>();
                 for (Food food : spawnedFood)
                 {
                     if (snake.getBody().getFirst().getX() +10 == food.getX() && snake.getBody().getFirst().getY() +10 == food.getY())
                     {
                         snakeBodyService.eatFood(snake, food);
+                        removedFood.add(food);
                         board.getChildren().remove(food.getCircle());
-                        if (food.getFoodName().equals("Apple"))
-                        {
-                            createFood(foodService.createApple(snake));
-                        }
-                        spawnedFood.remove(food);
                         setScore();
+                    }
+
+                    if (food.getExperationTimer() <= 0)
+                    {
+                        board.getChildren().remove(food.getCircle());
+                        removedFood.add(food);
+                    }
+                    else
+                    {
+                        food.setExperationTimer(food.getExperationTimer() - 1);
                     }
                 }
 
@@ -156,30 +162,34 @@ public class Controller
                     makeBody(body);
                 }
 
-                for (Food food : spawnedFood)
+                for (Food food : removedFood)
                 {
-                    if (food.getExperationTimer() <= 0)
+                    if (food.getFoodName().equals("Apple"))
                     {
-                        board.getChildren().remove(food.getCircle());
-                        if (food.getFoodName().equals("Apple"))
-                        {
-                            createFood(foodService.createApple(snake));
-                        }
-                        spawnedFood.remove(food);
+                        createFood(foodService.createApple(snake));
                     }
-                    else
-                    {
-                        food.setExperationTimer(food.getExperationTimer() - 1);
-                    }
+                }
 
-                    if (snake.getSpeed() == 1)
+                if (snake.getSpeed() == 1)
+                {
+                    if (random.nextInt(10) == random.nextInt(10))
                     {
-                        if (random.nextInt(5) == random.nextInt(5))
+                        board.setRotate(90);
+                    }
+                }
+
+                if (spawnedFood.size() == 1)
+                {
+                    if (random.nextInt(10) == random.nextInt(10))
+                    {
+                        switch (random.nextInt(1,3))
                         {
-                            board.setRotate(90);
+                            case 1-> createFood(foodService.createBanana(snake));
+                            case 2-> createFood(foodService.createOrange(snake));
                         }
                     }
                 }
+                spawnedFood.removeAll(removedFood);
             }
         }));
 
@@ -284,6 +294,7 @@ public class Controller
         circle.setStyle("-fx-fill: " + food.getColor() + ";"); // green head
         food.setCircle(circle);
         spawnedFood.add(food);
+        System.out.println("Food spawned = " + food.getFoodName());
         board.getChildren().add(food.getCircle());
     }
 }

@@ -24,7 +24,7 @@ public class FoodService implements IFoodService
     {
         int[] xy = createSpawnPoint(snake.getBody());
 
-        return new Food(foodNames[0], 10, foodColor[0], random.nextInt(40,80), xy[0], xy[1]);
+        return new Food(foodNames[0], 10, foodColor[0], random.nextInt(30,80), xy[0], xy[1]);
     }
 
     @Override
@@ -32,7 +32,7 @@ public class FoodService implements IFoodService
     {
         int[] xy = createSpawnPoint(snake.getBody());
 
-        return new Food(foodNames[1], 20, foodColor[1], random.nextInt(4,8), xy[0], xy[1]);
+        return new Food(foodNames[1], 20, foodColor[1], random.nextInt(20,70), xy[0], xy[1]);
     }
 
     @Override
@@ -40,7 +40,7 @@ public class FoodService implements IFoodService
     {
         int[] xy = createSpawnPoint(snake.getBody());
 
-        return new Food(foodNames[2], 50, foodColor[2], random.nextInt(4,8), xy[0], xy[1]);
+        return new Food(foodNames[2], 50, foodColor[2], random.nextInt(20,60), xy[0], xy[1]);
     }
 
     /***
