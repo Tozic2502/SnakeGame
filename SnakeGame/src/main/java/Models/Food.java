@@ -1,11 +1,14 @@
 package Models;
 
+import javafx.scene.shape.Circle;
+
 public class Food extends Placement
 {
     private String foodName;
     private int points;
     private String color;
     private int experationTimer;
+    private Circle circle;
 
     public String getFoodName()
     {
@@ -45,6 +48,16 @@ public class Food extends Placement
     public void setExperationTimer(int experationTimer)
     {
         this.experationTimer = experationTimer;
+    }
+
+    public Circle getCircle()
+    {
+        return circle;
+    }
+
+    public void setCircle(Circle circle)
+    {
+        this.circle = circle;
     }
 
     public Food (String foodName, int points, String color, int experationTimer, int x, int y)

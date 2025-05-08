@@ -1,5 +1,7 @@
 package org.example.snakegame;
 
+import Models.Body;
+import Models.Direction;
 import Models.Food;
 import Models.Snake;
 import Service.FoodService;
@@ -13,6 +15,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
@@ -52,6 +55,47 @@ public class Controller
     {
         board.setStyle("-fx-background-color: #1e1e1e;");
         drawCheckeredBoard(ROWS, COLS, UNIT_SIZE);
+        makeBody(snake.getBody().getFirst());
+
+        board.setOnKeyPressed(new EventHandler<KeyEvent>()
+        {
+            @Override
+            public void handle(KeyEvent keyEvent)
+            {
+                System.out.println("Hello");
+                switch (keyEvent.getCode())
+                {
+                    case UP ->
+                    {
+                        if (!snake.getDirection().equals(Direction.Down))
+                        {
+                            snake.setDirection(Direction.Up);
+                        }
+                    }
+                    case DOWN ->
+                    {
+                        if (!snake.getDirection().equals(Direction.Up))
+                        {
+                            snake.setDirection(Direction.Down);
+                        }
+                    }
+                    case LEFT ->
+                    {
+                        if (!snake.getDirection().equals(Direction.Right))
+                        {
+                            snake.setDirection(Direction.Left);
+                        }
+                    }
+                    case RIGHT ->
+                    {
+                        if (!snake.getDirection().equals(Direction.Left))
+                        {
+                            snake.setDirection(Direction.Right);
+                        }
+                    }
+                }
+            }
+        });
         createFood();
     }
 
@@ -60,7 +104,6 @@ public class Controller
         removeMenuChoices();
         startGame(20);
         setBoardReady();
-        makeHead();
     }
 
     private void startGame(int speed)
@@ -75,17 +118,29 @@ public class Controller
         this.spawnedFood = new ArrayList<>();
         tl.getKeyFrames().add(new KeyFrame(Duration.seconds(1), new EventHandler<ActionEvent>()
         {
-
             @Override
             public void handle(ActionEvent actionEvent)
             {
                 snakeBodyService.moveSnake(snake, snake.getDirection());
-                makeHead();
+                clearSnake();
+                for (Body body : snake.getBody())
+                {
+                    makeBody(body);
+                }
                 for (Food food : spawnedFood)
                 {
                     if (food.getExperationTimer() <= 0)
                     {
-
+                        board.getChildren().remove(food.getCircle());
+                        if (food.getFoodName().equals("Apple"))
+                        {
+                            createFood();
+                        }
+                        spawnedFood.remove(food);
+                    }
+                    else
+                    {
+                        food.setExperationTimer(food.getExperationTimer() - 1);
                     }
                 }
             }
@@ -151,10 +206,10 @@ public class Controller
         return foodL;
     }
 
-    public void makeHead()
+    public void makeBody(Body body)
     {
-        int x = snake.getBody().getFirst().getX();
-        int y = snake.getBody().getFirst().getY();
+        int x = body.getX();
+        int y = body.getY();
 
         Rectangle rect = new Rectangle(UNIT_SIZE, UNIT_SIZE); // size of one tile
         rect.setLayoutX(x);
@@ -163,6 +218,11 @@ public class Controller
         rect.setArcHeight(4);
         rect.setStyle("-fx-fill: #FFFFFF;"); // green head
 
+        board.getChildren().add(rect);
+    }
+
+    private void clearSnake()
+    {
         for (int i = 0; i < board.getChildren().size(); i++)
         {
             if (board.getChildren().get(i) instanceof Rectangle)
@@ -170,7 +230,6 @@ public class Controller
                 board.getChildren().remove(i);
             }
         }
-        board.getChildren().add(rect);
     }
 
     private void createFood()
@@ -179,8 +238,9 @@ public class Controller
         Circle circle = new Circle(UNIT_SIZE/2); // size of one tile
         circle.setLayoutX(food.getX());
         circle.setLayoutY(food.getY());
-        circle.setStyle("-fx-fill: #FF0000;"); // green head
+        circle.setStyle("-fx-fill: " + food.getColor() + ";"); // green head
+        food.setCircle(circle);
         spawnedFood.add(food);
-        board.getChildren().add(circle);
+        board.getChildren().add(food.getCircle());
     }
 }
