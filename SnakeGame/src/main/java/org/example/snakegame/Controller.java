@@ -243,16 +243,24 @@ public class Controller
         }
 
         this.score.setText("Score: " + totalScore);
+        setFoodL();
     }
 
     public void setFoodL()
     {
-        int totalFoodEaten = 0;
+        int applesEaten = 0;
+        int bananasEaten = 0;
+        int orangesEaten = 0;
         for (Food f : snake.getFoodEaten())
         {
-            totalFoodEaten += f.getPoints();
+            switch (f.getFoodName())
+            {
+                case "Apple" -> applesEaten++;
+                case "Bananas" -> bananasEaten++;
+                case "Oranges" -> orangesEaten++;
+            }
         }
-        this.foodL.setText("Food Eaten: " + totalFoodEaten);
+        this.foodL.setText("Food Eaten: Apples: " + applesEaten + " Bananas: " + bananasEaten + " Oranges: " + orangesEaten );
     }
 
     public Label getFoodL()
