@@ -63,7 +63,6 @@ public class Controller
             @Override
             public void handle(KeyEvent keyEvent)
             {
-                System.out.println("Hello");
                 switch (keyEvent.getCode())
                 {
                     case UP ->
@@ -115,19 +114,39 @@ public class Controller
 
         this.snakeBodyService = new SnakeBody();
         this.snake = snakeBodyService.createSnake(BOARD_WIDTH/2, BOARD_HEIGHT/2, speed);
-        this.foodService = new FoodService(BOARD_WIDTH, BOARD_HEIGHT, UNIT_SIZE);
+        this.foodService = new FoodService(COLS, ROWS, UNIT_SIZE);
         this.spawnedFood = new ArrayList<>();
-        tl.getKeyFrames().add(new KeyFrame(Duration.seconds(1), new EventHandler<ActionEvent>()
+        tl.getKeyFrames().add(new KeyFrame(Duration.millis(200), new EventHandler<ActionEvent>()
         {
             @Override
             public void handle(ActionEvent actionEvent)
             {
                 snakeBodyService.moveSnake(snake, snake.getDirection());
+                System.out.println("X " + snake.getBody().getFirst().getX() + " Y " + snake.getBody().getFirst().getY());
+                if (snake.getBody().getFirst().getX() >= BOARD_WIDTH || snake.getBody().getFirst().getX() < 0 || snake.getBody().getFirst().getY() > 460 || snake.getBody().getFirst().getY() < 0)
+                {
+                    tl.stop();
+                    return;
+                }
+
+                for (Food food : spawnedFood)
+                {
+                    if (snake.getBody().getFirst().getX() +10 == food.getX() && snake.getBody().getFirst().getY() +10 == food.getY())
+                    {
+                        snakeBodyService.eatFood(snake, food);
+                        board.getChildren().remove(food.getCircle());
+                        spawnedFood.remove(food);
+                        setScore();
+                        createFood();
+                    }
+                }
+
                 clearSnake();
                 for (Body body : snake.getBody())
                 {
                     makeBody(body);
                 }
+
                 for (Food food : spawnedFood)
                 {
                     if (food.getExperationTimer() <= 0)
@@ -148,6 +167,17 @@ public class Controller
         }));
 
         tl.play();
+    }
+
+    private boolean checkCordMach(int snakeCordinate, int foodCordinate)
+    {
+        System.out.println(snakeCordinate-10 + " " + foodCordinate);
+        if (snakeCordinate < foodCordinate +10 && snakeCordinate > foodCordinate -10)
+        {
+            System.out.println(snakeCordinate + " " + foodCordinate);
+            return true;
+        }
+        return false;
     }
 
     public void onActionInsaneMode(javafx.event.ActionEvent actionEvent)
@@ -185,11 +215,6 @@ public class Controller
         }
 
         this.score.setText("Score: " + totalScore);
-    }
-
-    public Label getScore()
-    {
-        return score;
     }
 
     public void setFoodL()
