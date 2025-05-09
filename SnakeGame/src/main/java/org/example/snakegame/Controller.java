@@ -29,7 +29,7 @@ import java.util.Random;
 
 public class Controller
 {
-    private final int BOARD_WIDTH = 720, BOARD_HEIGHT = 520, UNIT_SIZE = 20, ROWS = 24, COLS = 36;
+    private final int BOARD_WIDTH = 720, BOARD_HEIGHT = 440, UNIT_SIZE = 20, ROWS = 24, COLS = 36;
     private Snake snake;
     private List<Food> spawnedFood;
     private ISnakeBodyService snakeBodyService;
@@ -47,7 +47,9 @@ public class Controller
 
     public void removeMenuChoices()
     {
-        board.getChildren().removeAll(insaneMod,normaleMod,title);
+        insaneMod.setVisible(false);
+        normaleMod.setVisible(false);
+        title.setVisible(false);
         score.setVisible(true);
         foodL.setVisible(true);
     }
@@ -128,7 +130,7 @@ public class Controller
                     return;
                 }
 
-                if (snake.getBody().getFirst().getX() >= BOARD_WIDTH || snake.getBody().getFirst().getX() < 0 || snake.getBody().getFirst().getY() > 440 || snake.getBody().getFirst().getY() < 0)
+                if (snake.getBody().getFirst().getX() >= BOARD_WIDTH || snake.getBody().getFirst().getX() < 0 || snake.getBody().getFirst().getY() > BOARD_HEIGHT || snake.getBody().getFirst().getY() < 0)
                 {
                     tl.stop();
                     return;
