@@ -36,6 +36,9 @@ public class Controller
     private IFoodService foodService;
     private Timeline tl;
     private Random random;
+    private boolean speedBoostActive = false;
+    private int speedBoostTimer = 0;
+    private int currentInterval = 200;
     @FXML private Label title, score, foodL, restartL;
     @FXML private Button insaneMod, normaleMod;
     @FXML private AnchorPane board;
@@ -127,99 +130,102 @@ public class Controller
     public void onActionNormaleMode(javafx.event.ActionEvent actionEvent)
     {
         removeMenuChoices();
-        startGame(2);
+        start(2);
         setBoardReady();
     }
-
-    private void startGame(int speed)
-    {
-        tl = new Timeline();
+    private void startTimeline() {
+        if (tl != null) {
+            tl.stop();
+        }
+        tl = new Timeline(new KeyFrame(Duration.millis(currentInterval), e -> gameTick()));
         tl.setCycleCount(Timeline.INDEFINITE);
-        tl.setAutoReverse(false);
-
+        tl.play();
+    }
+    private void start(int speed) {
         this.snakeBodyService = new SnakeBody();
-        this.snake = snakeBodyService.createSnake(BOARD_WIDTH/2, BOARD_HEIGHT/2, speed);
+        this.snake = snakeBodyService.createSnake(BOARD_WIDTH / 2, BOARD_HEIGHT / 2, speed);
         this.foodService = new FoodService(COLS, ROWS, UNIT_SIZE);
         this.spawnedFood = new ArrayList<>();
-        tl.getKeyFrames().add(new KeyFrame(Duration.millis(200 * snake.getSpeed()), new EventHandler<ActionEvent>()
-        {
-            @Override
-            public void handle(ActionEvent actionEvent)
-            {
-                if (!moveBody())
-                {
-                    tl.stop();
-                    restartScreen();
-                    return;
-                }
+        this.currentInterval = 200 * snake.getSpeed();
+        startTimeline();
+    }
+    private void gameTick()
+    {
+        if (!moveBody()) {
+            tl.stop();
+            restartScreen();
+            return;
+        }
 
-                if (snake.getBody().getFirst().getX() >= BOARD_WIDTH || snake.getBody().getFirst().getX() < 0 || snake.getBody().getFirst().getY() > BOARD_HEIGHT || snake.getBody().getFirst().getY() < 0)
-                {
-                    tl.stop();
-                    restartScreen();
-                    return;
-                }
+        if (snake.getBody().getFirst().getX() >= BOARD_WIDTH || snake.getBody().getFirst().getX() < 0
+                || snake.getBody().getFirst().getY() > BOARD_HEIGHT || snake.getBody().getFirst().getY() < 0) {
+            tl.stop();
+            restartScreen();
+            return;
+        }
 
-                List<Food> removedFood = new ArrayList<>();
-                for (Food food : spawnedFood)
-                {
-                    if (snake.getBody().getFirst().getX() +10 == food.getX() && snake.getBody().getFirst().getY() +10 == food.getY())
-                    {
-                        snakeBodyService.eatFood(snake, food);
-                        removedFood.add(food);
-                        board.getChildren().remove(food.getCircle());
-                        setScore();
-                    }
+        List<Food> removedFood = new ArrayList<>();
+        for (Food food : spawnedFood) {
+            int snakeCenterX = snake.getBody().getFirst().getX() + UNIT_SIZE / 2;
+            int snakeCenterY = snake.getBody().getFirst().getY() + UNIT_SIZE / 2;
+            int foodCenterX = (int) food.getX();
+            int foodCenterY = (int) food.getY();
 
-                    if (food.getExperationTimer() <= 0)
-                    {
-                        board.getChildren().remove(food.getCircle());
-                        removedFood.add(food);
-                    }
-                    else
-                    {
-                        food.setExperationTimer(food.getExperationTimer() - 1);
-                    }
-                }
+            if (Math.abs(snakeCenterX - foodCenterX) < UNIT_SIZE && Math.abs(snakeCenterY - foodCenterY) < UNIT_SIZE) {
+                snakeBodyService.eatFood(snake, food);
+                removedFood.add(food);
+                board.getChildren().remove(food.getCircle());
+                setScore();
 
-                for (Food food : removedFood)
-                {
-                    if (food.getFoodName().equals("Apple"))
-                    {
-                        createFood(foodService.createApple(snake));
-                    }
+                if (food.getFoodName().equals("Banana")) {
+                    speedBoostActive = true;
+                    speedBoostTimer = 50;
+                    currentInterval = 100;
+                    startTimeline();
                 }
-
-                if (snake.getSpeed() == 1)
-                {
-                    if (random.nextInt(10) == random.nextInt(10))
-                    {
-                        board.setRotate(90);
-                    }
-                }
-
-                if (spawnedFood.size() == 1)
-                {
-                    if (random.nextInt(10) == random.nextInt(10))
-                    {
-                        switch (random.nextInt(1,3))
-                        {
-                            case 1-> createFood(foodService.createBanana(snake));
-                            case 2-> createFood(foodService.createOrange(snake));
-                        }
-                    }
-                }
-                spawnedFood.removeAll(removedFood);
             }
-        }));
 
-        tl.play();
+            if (food.getExperationTimer() <= 0) {
+                board.getChildren().remove(food.getCircle());
+                removedFood.add(food);
+            } else {
+                food.setExperationTimer(food.getExperationTimer() - 1);
+            }
+        }
+
+        for (Food food : removedFood) {
+            if (food.getFoodName().equals("Apple")) {
+                createFood(foodService.createApple(snake));
+            }
+        }
+
+        if (snake.getSpeed() == 1 && random.nextInt(10) == random.nextInt(10)) {
+            board.setRotate(90);
+        }
+
+        if (spawnedFood.size() == 1 && random.nextInt(10) == random.nextInt(10)) {
+            switch (random.nextInt(1, 3)) {
+                case 1 -> createFood(foodService.createBanana(snake));
+                case 2 -> createFood(foodService.createOrange(snake));
+            }
+        }
+
+        spawnedFood.removeAll(removedFood);
+
+        if (speedBoostActive) {
+            speedBoostTimer--;
+            if (speedBoostTimer <= 0) {
+                speedBoostActive = false;
+                currentInterval = 200 * snake.getSpeed();
+                startTimeline();
+            }
+        }
     }
 
     public void onActionInsaneMode(javafx.event.ActionEvent actionEvent)
     {
         removeMenuChoices();
-        startGame(1);
+        start(1);
         setBoardReady();
     }
 
