@@ -29,14 +29,14 @@ import java.util.Random;
 
 public class Controller
 {
-    private final int BOARD_WIDTH = 720, BOARD_HEIGHT = 440, UNIT_SIZE = 20, ROWS = 24, COLS = 36;
+    private final int BOARD_WIDTH = 720, BOARD_HEIGHT = 440, UNIT_SIZE = 20, ROWS = 23, COLS = 36;
     private Snake snake;
     private List<Food> spawnedFood;
     private ISnakeBodyService snakeBodyService;
     private IFoodService foodService;
     private Timeline tl;
     private Random random;
-    @FXML private Label title, score, foodL;
+    @FXML private Label title, score, foodL, restartL;
     @FXML private Button insaneMod, normaleMod;
     @FXML private AnchorPane board;
 
@@ -52,6 +52,27 @@ public class Controller
         title.setVisible(false);
         score.setVisible(true);
         foodL.setVisible(true);
+        restartL.setVisible(false);
+    }
+    /**
+     * Show restart screen: clear board tiles, change background to white, show menu
+     */
+    public void restartScreen() {
+        // Stop and clear board contents except UI controls
+        clearCheckerboard();
+        clearSnake();
+        clearFood();
+        // Set background to white for game over screen
+        board.setStyle("-fx-background-color: white;");
+
+        // Show menu controls and game over title
+        insaneMod.setVisible(true);
+        normaleMod.setVisible(true);
+        title.setVisible(true);
+        title.setText("Game Over! " + score.getText());
+        score.setVisible(false);
+        foodL.setVisible(false);
+        restartL.setVisible(true);
     }
 
     public void setBoardReady()
@@ -59,6 +80,7 @@ public class Controller
         board.setStyle("-fx-background-color: #1e1e1e;");
         drawCheckeredBoard(ROWS, COLS, UNIT_SIZE);
         makeBody();
+        setScore();
 
         board.requestFocus();
         board.setOnKeyPressed(new EventHandler<KeyEvent>()
@@ -127,12 +149,14 @@ public class Controller
                 if (!moveBody())
                 {
                     tl.stop();
+                    restartScreen();
                     return;
                 }
 
                 if (snake.getBody().getFirst().getX() >= BOARD_WIDTH || snake.getBody().getFirst().getX() < 0 || snake.getBody().getFirst().getY() > BOARD_HEIGHT || snake.getBody().getFirst().getY() < 0)
                 {
                     tl.stop();
+                    restartScreen();
                     return;
                 }
 
@@ -300,5 +324,13 @@ public class Controller
         spawnedFood.add(food);
         System.out.println("Food spawned = " + food.getFoodName());
         board.getChildren().add(food.getCircle());
+    }
+    private void clearCheckerboard() {
+        board.getChildren().removeIf(node -> node instanceof Pane &&
+                (node.getStyleClass().contains("tile-light") || node.getStyleClass().contains("tile-dark")));
+    }
+
+    private void clearFood() {
+        board.getChildren().removeIf(node -> node instanceof Circle);
     }
 }
