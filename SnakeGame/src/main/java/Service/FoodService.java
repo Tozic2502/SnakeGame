@@ -9,13 +9,13 @@ public class FoodService implements IFoodService
 {
     private final String[] foodNames = {"Apple", "Banana", "Orange"};
     private final String[] foodColor = {"Red", "Yellow", "Orange"};
-    private final int width, height, unitSize;
+    private final int ROWS, COLS, unitSize;
     private Random random = new Random();
 
-    public FoodService(int width, int height, int unitSize)
+    public FoodService(int cols, int rows, int unitSize)
     {
-        this.width = width;
-        this.height = height;
+        this.COLS = cols;
+        this.ROWS = rows;
         this.unitSize = unitSize;
     }
 
@@ -24,7 +24,7 @@ public class FoodService implements IFoodService
     {
         int[] xy = createSpawnPoint(snake.getBody());
 
-        return new Food(foodNames[0], 10, foodColor[0], random.nextInt(4,8), xy[0], xy[1]);
+        return new Food(foodNames[0], 10, foodColor[0], random.nextInt(30,80), xy[0], xy[1]);
     }
 
     @Override
@@ -32,7 +32,7 @@ public class FoodService implements IFoodService
     {
         int[] xy = createSpawnPoint(snake.getBody());
 
-        return new Food(foodNames[1], 20, foodColor[1], random.nextInt(4,8), xy[0], xy[1]);
+        return new Food(foodNames[1], 20, foodColor[1], random.nextInt(20,70), xy[0], xy[1]);
     }
 
     @Override
@@ -40,7 +40,7 @@ public class FoodService implements IFoodService
     {
         int[] xy = createSpawnPoint(snake.getBody());
 
-        return new Food(foodNames[2], 50, foodColor[2], random.nextInt(4,8), xy[0], xy[1]);
+        return new Food(foodNames[2], 50, foodColor[2], random.nextInt(20,60), xy[0], xy[1]);
     }
 
     /***
@@ -54,11 +54,11 @@ public class FoodService implements IFoodService
         while (!isValid)
         {
             isValid = true;
-            x = random.nextInt(width/unitSize) * unitSize;
-            y = random.nextInt(height/unitSize) * unitSize;
+            x = random.nextInt(1, COLS) * unitSize -10;
+            y = random.nextInt(1, ROWS) * unitSize -10;
             for (Placement p : body)
             {
-                if (x == p.getX() && y == p.getY())
+                if (x == p.getX()+10 && y == p.getY()+10)
                 {
                     isValid = false;
                     break;
