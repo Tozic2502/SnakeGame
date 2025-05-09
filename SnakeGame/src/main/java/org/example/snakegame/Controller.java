@@ -56,7 +56,7 @@ public class Controller
     {
         board.setStyle("-fx-background-color: #1e1e1e;");
         drawCheckeredBoard(ROWS, COLS, UNIT_SIZE);
-        makeBody(snake.getBody().getFirst());
+        makeBody();
 
         board.requestFocus();
         board.setOnKeyPressed(new EventHandler<KeyEvent>()
@@ -122,7 +122,7 @@ public class Controller
             @Override
             public void handle(ActionEvent actionEvent)
             {
-                if (!snakeBodyService.moveSnake(snake, snake.getDirection()))
+                if (!moveBody())
                 {
                     tl.stop();
                     return;
@@ -154,12 +154,6 @@ public class Controller
                     {
                         food.setExperationTimer(food.getExperationTimer() - 1);
                     }
-                }
-
-                clearSnake();
-                for (Body body : snake.getBody())
-                {
-                    makeBody(body);
                 }
 
                 for (Food food : removedFood)
@@ -194,17 +188,6 @@ public class Controller
         }));
 
         tl.play();
-    }
-
-    private boolean checkCordMach(int snakeCordinate, int foodCordinate)
-    {
-        System.out.println(snakeCordinate-10 + " " + foodCordinate);
-        if (snakeCordinate < foodCordinate +10 && snakeCordinate > foodCordinate -10)
-        {
-            System.out.println(snakeCordinate + " " + foodCordinate);
-            return true;
-        }
-        return false;
     }
 
     public void onActionInsaneMode(javafx.event.ActionEvent actionEvent)
@@ -263,24 +246,35 @@ public class Controller
         this.foodL.setText("Food Eaten: Apples: " + applesEaten + " Bananas: " + bananasEaten + " Oranges: " + orangesEaten );
     }
 
-    public Label getFoodL()
+    public boolean moveBody()
     {
-        return foodL;
+        if (!snakeBodyService.moveSnake(snake, snake.getDirection()))
+        {
+            return false;
+        }
+
+        makeBody();
+
+        return true;
     }
 
-    public void makeBody(Body body)
+    private void makeBody()
     {
-        int x = body.getX();
-        int y = body.getY();
+        clearSnake();
+        for (Body body : snake.getBody())
+        {
+            int x = body.getX();
+            int y = body.getY();
 
-        Rectangle rect = new Rectangle(UNIT_SIZE, UNIT_SIZE); // size of one tile
-        rect.setLayoutX(x);
-        rect.setLayoutY(y);
-        rect.setArcWidth(4);
-        rect.setArcHeight(4);
-        rect.setStyle("-fx-fill: #FFFFFF;"); // green head
+            Rectangle rect = new Rectangle(UNIT_SIZE, UNIT_SIZE); // size of one tile
+            rect.setLayoutX(x);
+            rect.setLayoutY(y);
+            rect.setArcWidth(4);
+            rect.setArcHeight(4);
+            rect.setStyle("-fx-fill: #FFFFFF;"); // green head
 
-        board.getChildren().add(rect);
+            board.getChildren().add(rect);
+        }
     }
 
     private void clearSnake()
