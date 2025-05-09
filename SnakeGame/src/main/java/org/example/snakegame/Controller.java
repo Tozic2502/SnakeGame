@@ -256,8 +256,8 @@ public class Controller
             switch (f.getFoodName())
             {
                 case "Apple" -> applesEaten++;
-                case "Bananas" -> bananasEaten++;
-                case "Oranges" -> orangesEaten++;
+                case "Banana" -> bananasEaten++;
+                case "Orange" -> orangesEaten++;
             }
         }
         this.foodL.setText("Food Eaten: Apples: " + applesEaten + " Bananas: " + bananasEaten + " Oranges: " + orangesEaten );
