@@ -128,7 +128,7 @@ public class Controller
                     return;
                 }
 
-                if (snake.getBody().getFirst().getX() >= BOARD_WIDTH || snake.getBody().getFirst().getX() < 0 || snake.getBody().getFirst().getY() > 460 || snake.getBody().getFirst().getY() < 0)
+                if (snake.getBody().getFirst().getX() >= BOARD_WIDTH || snake.getBody().getFirst().getX() < 0 || snake.getBody().getFirst().getY() > 440 || snake.getBody().getFirst().getY() < 0)
                 {
                     tl.stop();
                     return;
