@@ -68,4 +68,17 @@ public class Food extends Placement
         this.color = color;
         this.experationTimer = experationTimer;
     }
+
+    private boolean isPowerUpEffect;
+
+    public boolean isPowerUpEffect() {
+        return isPowerUpEffect;
+    }
+
+    public void setPowerUpEffect(boolean isPowerUpEffect) {
+        this.isPowerUpEffect = isPowerUpEffect;
+    }
+
+
+
 }

@@ -20,7 +20,7 @@ public class SnakeBody implements ISnakeBodyService
     public void eatFood(Snake snake, Food food)
     {
         snake.eatFood(food);
-        addBody(snake, food.getX() -10, food.getY() -10);
+        addBody(snake, snake.getBody().getLast().getX(), snake.getBody().getLast().getY());
     }
 
     @Override

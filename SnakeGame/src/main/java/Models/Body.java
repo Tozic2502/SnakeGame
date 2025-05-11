@@ -16,4 +16,3 @@ public class Body extends Placement {
         this.indexOfBody = indexOfBody;
     }
 }
-

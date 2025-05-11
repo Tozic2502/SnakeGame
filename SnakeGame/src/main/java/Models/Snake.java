@@ -15,13 +15,13 @@ public class Snake
 
 
 
-        public void draw(GraphicsContext gc, int tileSize) {
-            for (Body part : body) {
-                gc.setFill(Color.LIGHTGREEN);
-                gc.fillOval(part.getX(), part.getY(), tileSize, tileSize);
-            }
-
+    public void draw(GraphicsContext gc, int tileSize) {
+        for (Body part : body) {
+            gc.setFill(Color.LIGHTGREEN);
+            gc.fillOval(part.getX(), part.getY(), tileSize, tileSize);
         }
+
+    }
 
     public List<Body> getBody() {
         return body;

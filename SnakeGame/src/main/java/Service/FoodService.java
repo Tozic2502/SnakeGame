@@ -36,12 +36,14 @@ public class FoodService implements IFoodService
     }
 
     @Override
-    public Food createOrange(Snake snake)
-    {
+    public Food createOrange(Snake snake) {
         int[] xy = createSpawnPoint(snake.getBody());
 
-        return new Food(foodNames[2], 50, foodColor[2], random.nextInt(20,60), xy[0], xy[1]);
+        Food orange = new Food(foodNames[2], 50, foodColor[2], random.nextInt(20, 60), xy[0], xy[1]);
+        orange.setPowerUpEffect(true); // Mark this as a power-up food
+        return orange;
     }
+
 
     /***
      * creates foods spawnpoint from random ints and returns int array for X Y

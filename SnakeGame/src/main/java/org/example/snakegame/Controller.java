@@ -36,9 +36,11 @@ public class Controller
     private IFoodService foodService;
     private Timeline tl;
     private Random random;
-    private boolean speedBoostActive = false;
-    private int speedBoostTimer = 0;
+    private boolean isSpeedBoost = false;
+    private boolean isBigHead = false;
+    private int powerupTimer = 0;
     private int currentInterval = 200;
+    private boolean bigHead = false;
     @FXML private Label title, score, foodL, restartL;
     @FXML private Button insaneMod, normaleMod;
     @FXML private AnchorPane board;
@@ -166,24 +168,37 @@ public class Controller
 
         List<Food> removedFood = new ArrayList<>();
         for (Food food : spawnedFood) {
-            int snakeCenterX = snake.getBody().getFirst().getX() + UNIT_SIZE / 2;
-            int snakeCenterY = snake.getBody().getFirst().getY() + UNIT_SIZE / 2;
-            int foodCenterX = (int) food.getX();
-            int foodCenterY = (int) food.getY();
+            int headX = snake.getBody().getFirst().getX();
+            int headY = snake.getBody().getFirst().getY();
+            int foodX = (int) food.getX();
+            int foodY = (int) food.getY();
 
-            if (Math.abs(snakeCenterX - foodCenterX) < UNIT_SIZE && Math.abs(snakeCenterY - foodCenterY) < UNIT_SIZE) {
+// Define collision range depending on power-up
+            double collisionRange = bigHead ? UNIT_SIZE * 1.5 : UNIT_SIZE;
+
+// Check distance from top-left corner (rough enough for food collisions)
+            if (Math.abs((headX + UNIT_SIZE / 2) - foodX) < collisionRange &&
+                    Math.abs((headY + UNIT_SIZE / 2) - foodY) < collisionRange) {
+
                 snakeBodyService.eatFood(snake, food);
                 removedFood.add(food);
                 board.getChildren().remove(food.getCircle());
                 setScore();
 
                 if (food.getFoodName().equals("Banana")) {
-                    speedBoostActive = true;
-                    speedBoostTimer = 50;
+                    isSpeedBoost = true;
+                    powerupTimer = 50;
                     currentInterval = 100;
                     startTimeline();
                 }
+
+                if (food.getFoodName().equals("Orange")) {
+                    bigHead = true;
+                    isBigHead = true;
+                    powerupTimer = 50;
+                }
             }
+
 
             if (food.getExperationTimer() <= 0) {
                 board.getChildren().remove(food.getCircle());
@@ -212,14 +227,24 @@ public class Controller
 
         spawnedFood.removeAll(removedFood);
 
-        if (speedBoostActive) {
-            speedBoostTimer--;
-            if (speedBoostTimer <= 0) {
-                speedBoostActive = false;
-                currentInterval = 200 * snake.getSpeed();
-                startTimeline();
+        if (powerupTimer > 0) {
+            powerupTimer--;
+
+            if (powerupTimer == 0) {
+                if (isSpeedBoost) {
+                    currentInterval = 200 * snake.getSpeed();
+                    startTimeline();
+                }
+
+                if (isBigHead) {
+                    bigHead = false;
+                }
+
+                isSpeedBoost = false;
+                isBigHead = false;
             }
         }
+
     }
 
     public void onActionInsaneMode(javafx.event.ActionEvent actionEvent)
@@ -290,24 +315,40 @@ public class Controller
         return true;
     }
 
-    private void makeBody()
-    {
+    private void makeBody() {
         clearSnake();
-        for (Body body : snake.getBody())
-        {
+        List<Body> snakeParts = snake.getBody();
+
+        for (int i = 0; i < snakeParts.size(); i++) {
+            Body body = snakeParts.get(i);
             int x = body.getX();
             int y = body.getY();
 
-            Rectangle rect = new Rectangle(UNIT_SIZE, UNIT_SIZE); // size of one tile
-            rect.setLayoutX(x);
-            rect.setLayoutY(y);
+            Rectangle rect;
+
+            if (i == 0 && bigHead) {
+                // Head: 3x3 tiles (3 * UNIT_SIZE)
+                int size = UNIT_SIZE * 3;
+                rect = new Rectangle(size, size);
+                // Center it so it visually matches original tile grid
+                rect.setLayoutX(x - UNIT_SIZE); // Move 1 tile left
+                rect.setLayoutY(y - UNIT_SIZE); // Move 1 tile up
+                rect.setStyle("-fx-fill: #FFA500;"); // Optional orange for distinction
+            } else {
+                // Normal body tile
+                rect = new Rectangle(UNIT_SIZE, UNIT_SIZE);
+                rect.setLayoutX(x);
+                rect.setLayoutY(y);
+                rect.setStyle("-fx-fill: #FFFFFF;");
+            }
+
             rect.setArcWidth(4);
             rect.setArcHeight(4);
-            rect.setStyle("-fx-fill: #FFFFFF;"); // green head
-
             board.getChildren().add(rect);
         }
     }
+
+
 
     private void clearSnake()
     {
